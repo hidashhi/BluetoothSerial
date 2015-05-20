@@ -33,4 +33,9 @@
 #define LAIRD_CHAR_TX_UUID                       "569a2000-b87f-490c-92cb-11ba5ea5167c"
 #define LAIRD_CHAR_RX_UUID                       "569a2001-b87f-490c-92cb-11ba5ea5167c"
 
+#define ISSC_SERVICE_UUID                        "49535343-FE7D-4AE5-8FA9-9FAFD205E455"
+#define ISSC_CHAR_TX_UUID                        "49535343-1E4D-4BD9-BA61-23C647249616"
+#define ISSC_CHAR_RX_UUID                        "49535343-8841-43F4-A8D4-ECBE34729BB3"
+
+
 #define RBL_BLE_FRAMEWORK_VER                    0x0200
