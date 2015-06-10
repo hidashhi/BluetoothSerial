@@ -22,10 +22,10 @@
 
 @protocol BLEDelegate
 @optional
--(void) bleDidConnect;
--(void) bleDidDisconnect;
+-(void) bleDidConnect:(NSString *) uuid;
+-(void) bleDidDisconnect:(NSString *) uuid;
 -(void) bleDidUpdateRSSI:(NSNumber *) rssi;
--(void) bleDidReceiveData:(unsigned char *) data length:(int) length;
+-(void) bleDidReceiveData:(NSString *) uuid data:(unsigned char *) data length:(int) length;
 @required
 @end
 
@@ -36,15 +36,17 @@
 @property (nonatomic,assign) id <BLEDelegate> delegate;
 @property (strong, nonatomic) NSMutableArray *peripherals;
 @property (strong, nonatomic) CBCentralManager *CM;
-@property (strong, nonatomic) CBPeripheral *activePeripheral;
 
+// Map of CBPeripheral with device uuid as a key
+@property (strong, nonatomic) NSMutableDictionary *activePeripherals;
+
+-(CBPeripheral*) activePeripheralForUuid: (NSString*)uuid;
 -(void) enableReadNotification:(CBPeripheral *)p;
--(void) read;
+//-(void) read;
 -(void) writeValue:(CBUUID *)serviceUUID characteristicUUID:(CBUUID *)characteristicUUID p:(CBPeripheral *)p data:(NSData *)data;
 
--(BOOL) isConnected;
--(void) write:(NSData *)d;
--(void) readRSSI;
+-(void) write:(NSString*)uuid data:(NSData *)d;
+//-(void) readRSSI;
 
 -(void) controlSetup;
 -(int) findBLEPeripherals:(int) timeout;

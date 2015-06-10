@@ -14,12 +14,12 @@
 
 @interface MEGBluetoothSerial : CDVPlugin <BLEDelegate> {
     BLE *_bleShield;
-    NSString* _connectCallbackId;
-    NSString* _subscribeCallbackId;
+    NSMutableDictionary* _connectCallbackIds; // connecting callbacks, device id as a key
+    NSMutableDictionary* _subscribeCallbackIds; // subscribe callbacks, device id as a key
     NSString* _subscribeBytesCallbackId;
     NSString* _rssiCallbackId;
     NSMutableString *_buffer;
-    NSString *_delimiter;
+    NSMutableDictionary* _delimiters;  // message delimiters for different devices, device id as a key
 }
 
 - (void)connect:(CDVInvokedUrlCommand *)command;
@@ -33,14 +33,8 @@
 
 - (void)list:(CDVInvokedUrlCommand *)command;
 - (void)isEnabled:(CDVInvokedUrlCommand *)command;
-- (void)isConnected:(CDVInvokedUrlCommand *)command;
 
 - (void)available:(CDVInvokedUrlCommand *)command;
-- (void)read:(CDVInvokedUrlCommand *)command;
-- (void)readUntil:(CDVInvokedUrlCommand *)command;
-- (void)clear:(CDVInvokedUrlCommand *)command;
-
-- (void)readRSSI:(CDVInvokedUrlCommand *)command;
 
 @end
 
