@@ -32,6 +32,8 @@
 - (void)write:(CDVInvokedUrlCommand *)command;
 
 - (void)list:(CDVInvokedUrlCommand *)command;
+// Does nothing in iOS, added for plugin compatibility with Android.
+- (void)discoverUnpaired:(CDVInvokedUrlCommand *)command;
 - (void)isEnabled:(CDVInvokedUrlCommand *)command;
 
 - (void)available:(CDVInvokedUrlCommand *)command;

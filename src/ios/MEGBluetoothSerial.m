@@ -157,6 +157,14 @@
                                     repeats:NO];
 }
 
+- (void)discoverUnpaired:(CDVInvokedUrlCommand *)command {
+    CDVPluginResult *pluginResult = nil;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                        messageAsInt:0];
+    [self.commandDelegate sendPluginResult:pluginResult
+                                callbackId:command.callbackId];
+}
+
 - (void)isEnabled:(CDVInvokedUrlCommand*)command {
 
     // short delay so CBCentralManger can spin up bluetooth
@@ -383,8 +391,9 @@
     NSLog(@"Scanning for BLE Peripherals");
 
     // close active peripherals
-    for (CBPeripheral* peripheral in _bleShield.activePeripherals) {
+    for (NSString* uuid in _bleShield.activePeripherals) {
         // disconnect
+        CBPeripheral* peripheral = [_bleShield.activePeripherals objectForKey:uuid];
         if (peripheral && peripheral.isConnected)
         {
             [[_bleShield CM] cancelPeripheralConnection:peripheral];
