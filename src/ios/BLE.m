@@ -705,7 +705,7 @@ BLE* bleShield;
         // Parameters written, need to read them now
         [self checkConnectionParameterStatus:peripheral];
     }
-    
+
 }
 
 - (void) checkConnectionParameterStatus:(CBPeripheral *)peripheral {
@@ -738,7 +738,7 @@ BLE* bleShield;
     [initializationSteps setObject:[NSNumber numberWithInt:UPDATE_PARAMETERS_STEP_PREPARE]
                             forKey:peripheral.identifier.UUIDString];
 
-    NSString* str = @"1,";
+    NSString* str = @"0,";
     NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
     [peripheral writeValue:data forCharacteristic:c type:CBCharacteristicWriteWithResponse];
     NSLog(@"Initial value is written");
