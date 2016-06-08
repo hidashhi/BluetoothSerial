@@ -33,6 +33,9 @@ public class BluetoothSerial extends CordovaPlugin {
     private static final String WRITE = "write";
     private static final String SUBSCRIBE = "subscribe";
     private static final String UNSUBSCRIBE = "unsubscribe";
+    private static final String SUBSCRIBE_RAW = "subscribeRaw";
+    private static final String UNSUBSCRIBE_RAW = "unsubscribeRaw";
+
     private static final String IS_ENABLED = "isEnabled";
     private static final String ENABLE = "enable";
     private static final String DISCOVER_UNPAIRED = "discoverUnpaired";
@@ -42,6 +45,7 @@ public class BluetoothSerial extends CordovaPlugin {
     // callbacks
     private HashMap<String, CallbackContext> connectCallbacks = new HashMap<String, CallbackContext>();
     private HashMap<String, CallbackContext> dataAvailableCallbacks = new HashMap<String, CallbackContext>();
+    private HashMap<String, CallbackContext> dataAvailableCallbacksRaw = new HashMap<String, CallbackContext>();
     private CallbackContext enableBluetoothCallback;
     private CallbackContext deviceDiscoveredCallback;
 
@@ -121,6 +125,25 @@ public class BluetoothSerial extends CordovaPlugin {
             CallbackContext dataAvailableCallback = dataAvailableCallbacks.get(macAddress);
             dataAvailableCallback.sendPluginResult(result);
             dataAvailableCallbacks.remove(macAddress);
+
+            callbackContext.success();
+
+        } else if (action.equals(SUBSCRIBE_RAW)) {
+            final String macAddress = args.getString(0);
+            dataAvailableCallbacksRaw.put(macAddress, callbackContext);
+
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            callbackContext.sendPluginResult(result);
+
+        } else if (action.equals(UNSUBSCRIBE_RAW)) {
+            final String macAddress = args.getString(0);
+
+            // send no result, so Cordova won't hold onto the data available callback anymore
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            CallbackContext dataAvailableCallback = dataAvailableCallbacksRaw.get(macAddress);
+            dataAvailableCallback.sendPluginResult(result);
+            dataAvailableCallbacksRaw.remove(macAddress);
 
             callbackContext.success();
 
@@ -282,16 +305,17 @@ public class BluetoothSerial extends CordovaPlugin {
             address = macAddress;
         }
 
-         public void handleMessage(Message msg) {
-             switch (msg.what) {
-                 case MESSAGE_READ:
-                     buffer.append((String)msg.obj);
-                     sendDataToSubscriber();
-                     break;
-                 case MESSAGE_READ_RAW:
-                     // TODO should never happen
-                     break;
-                 case MESSAGE_STATE_CHANGE:
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_READ:
+                    buffer.append((String)msg.obj);
+                    sendDataToSubscriber();
+                    break;
+                case MESSAGE_READ_RAW:
+                    byte[] bytes = (byte[]) msg.obj;
+                    sendRawDataToSubscriber(bytes);
+                    break;
+                case MESSAGE_STATE_CHANGE:
 
                     if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
                     switch (msg.arg1) {
@@ -322,8 +346,8 @@ public class BluetoothSerial extends CordovaPlugin {
                     String message = msg.getData().getString(TOAST);
                     notifyConnectionLost(address, message);
                     break;
-             }
-         }
+            }
+        }
 
         private void sendDataToSubscriber() {
             CallbackContext dataAvailableCallback = dataAvailableCallbacks.get(address);
@@ -349,6 +373,19 @@ public class BluetoothSerial extends CordovaPlugin {
                 buffer.delete(0, index + c.length());
             }
             return data;
+        }
+
+        private void sendRawDataToSubscriber(byte[] data) {
+            CallbackContext dataAvailableCallback = dataAvailableCallbacksRaw.get(address);
+            if (dataAvailableCallback == null) {
+                return;
+            }
+
+            if (data != null && data.length > 0) {
+                PluginResult result = new PluginResult(PluginResult.Status.OK, data);
+                result.setKeepCallback(true);
+                dataAvailableCallback.sendPluginResult(result);
+            }
         }
 
         public void setDelimiter(String newDelimiter) {

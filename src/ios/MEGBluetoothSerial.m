@@ -114,14 +114,19 @@
 
 - (void)subscribeRaw:(CDVInvokedUrlCommand*)command {
     NSLog(@"subscribeRaw");
+    NSString *uuid = [command.arguments objectAtIndex:0];
 
-    _subscribeBytesCallbackId = [command.callbackId copy];
+    if (!_subscribeRawCallbackIds) {
+        _subscribeRawCallbackIds = [NSMutableDictionary dictionary];
+    }
+    [_subscribeRawCallbackIds setObject:[command.callbackId copy] forKey:uuid];
 }
 
 - (void)unsubscribeRaw:(CDVInvokedUrlCommand*)command {
     NSLog(@"unsubscribeRaw");
+    NSString *uuid = [command.arguments objectAtIndex:0];
 
-    _subscribeBytesCallbackId = nil;
+    [_subscribeRawCallbackIds removeObjectForKey:uuid];
 
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -200,13 +205,13 @@
     }
 
     // Always send raw data if someone is listening
-    if (_subscribeBytesCallbackId) {
+    NSString* callbackId = [_subscribeRawCallbackIds objectForKey:uuid];
+    if (callbackId) {
         NSData* nsData = [NSData dataWithBytes:(const void *)data length:length];
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArrayBuffer:nsData];
         [pluginResult setKeepCallbackAsBool:TRUE];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:_subscribeBytesCallbackId];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
     }
-
 }
 
 - (void)bleDidConnect:(NSString*) uuid {

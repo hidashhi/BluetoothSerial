@@ -226,6 +226,10 @@ IsscInitializer *isscInitializer;
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error;
 {
+    if (error) {
+        NSLog(@"didDisconnectPeripheral with error code %s", [[error description] cStringUsingEncoding:NSStringEncodingConversionAllowLossy]);
+    }
+
     NSString* uuid = peripheral.identifier.UUIDString;
     [[self delegate] bleDidDisconnect: uuid];
 }
@@ -508,6 +512,7 @@ IsscInitializer *isscInitializer;
                                                                     service:service];
         if (characteristic) {
             [isscInitializer start:peripheral characteristic:characteristic];
+            [[self delegate] bleDidConnect:peripheral.identifier.UUIDString];
         }
     }
     else
@@ -768,9 +773,6 @@ BLE* bleShield;
             [initializationSteps setObject:[NSNumber numberWithInt:UPDATE_PARAMETERS_STEP_CHECK_RESULT]
                                     forKey:peripheral.identifier.UUIDString];
 
-        } else {
-            // Notify delegate about complete connection
-            [[bleShield delegate] bleDidConnect:peripheral.identifier.UUIDString];
         }
     }
 }

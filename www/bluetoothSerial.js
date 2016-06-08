@@ -45,6 +45,26 @@ module.exports = {
         cordova.exec(success, failure, "BluetoothSerial", "unsubscribe", [macAddress]);
     },
 
+    // calls the success callback when new data is available with an ArrayBuffer
+    subscribeRawData: function (macAddress, success, failure) {
+        successWrapper = function(data) {
+            // Windows Phone flattens an array of one into a number which
+            // breaks the API. Stuff it back into an ArrayBuffer.
+            if (typeof data === 'number') {
+                var a = new Uint8Array(1);
+                a[0] = data;
+                data = a.buffer;
+            }
+            success(data);
+        };
+        cordova.exec(successWrapper, failure, "BluetoothSerial", "subscribeRaw", [macAddress]);
+    },
+
+    // removes data subscription
+    unsubscribeRawData: function (macAddress, success, failure) {
+        cordova.exec(success, failure, "BluetoothSerial", "unsubscribeRaw", [macAddress]);
+    },
+
     enable: function (success, failure) {
         cordova.exec(success, failure, "BluetoothSerial", "enable", []);
     },

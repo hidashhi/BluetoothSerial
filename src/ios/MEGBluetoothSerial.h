@@ -16,7 +16,7 @@
     BLE *_bleShield;
     NSMutableDictionary* _connectCallbackIds; // connecting callbacks, device id as a key
     NSMutableDictionary* _subscribeCallbackIds; // subscribe callbacks, device id as a key
-    NSString* _subscribeBytesCallbackId;
+    NSMutableDictionary* _subscribeRawCallbackIds; // subscribe callbacks, device id as a key
     NSString* _rssiCallbackId;
     NSMutableString *_buffer;
     NSMutableDictionary* _delimiters;  // message delimiters for different devices, device id as a key
