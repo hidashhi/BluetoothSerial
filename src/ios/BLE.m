@@ -600,7 +600,7 @@ IsscInitializer *isscInitializer;
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-    unsigned char data[20];
+    unsigned char data[512];
 
     static unsigned char buf[512];
     static int len = 0;
