@@ -462,17 +462,21 @@ IsscInitializer *isscInitializer;
     {
         for(int i = 0; i < self.peripherals.count; i++)
         {
-            CBPeripheral *p = [self.peripherals objectAtIndex:i];
-            [p setAdvertisementData:advertisementData RSSI:RSSI];
+            @try {
+                CBPeripheral *p = [self.peripherals objectAtIndex:i];
+                [p setAdvertisementData:advertisementData RSSI:RSSI];
 
-            if ((p.identifier == NULL) || (peripheral.identifier == NULL))
-                continue;
+                if ((p.identifier == NULL) || (peripheral.identifier == NULL))
+                    continue;
 
-            if ([self UUIDSAreEqual:p.identifier UUID2:peripheral.identifier])
-            {
-                [self.peripherals replaceObjectAtIndex:i withObject:peripheral];
-                NSLog(@"Duplicate UUID found updating...");
-                return;
+                if ([self UUIDSAreEqual:p.identifier UUID2:peripheral.identifier])
+                {
+                    [self.peripherals replaceObjectAtIndex:i withObject:peripheral];
+                    NSLog(@"Duplicate UUID found updating...");
+                    return;
+                }
+            }
+            @finally {
             }
         }
 
