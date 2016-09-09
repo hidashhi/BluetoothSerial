@@ -456,6 +456,8 @@ IsscInitializer *isscInitializer;
 
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
+    [peripheral setAdvertisementData:advertisementData RSSI:RSSI];
+
     if (!self.peripherals)
         self.peripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
     else
@@ -464,7 +466,6 @@ IsscInitializer *isscInitializer;
         {
             @try {
                 CBPeripheral *p = [self.peripherals objectAtIndex:i];
-                [p setAdvertisementData:advertisementData RSSI:RSSI];
 
                 if ((p.identifier == NULL) || (peripheral.identifier == NULL))
                     continue;
